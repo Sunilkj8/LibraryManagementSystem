@@ -1,1 +1,2 @@
 create table self_help_books(book_id serial primary key,book_name varchar(1000),book_author varchar(300),book_image varchar(10000000),book_description varchar(10000000))
+

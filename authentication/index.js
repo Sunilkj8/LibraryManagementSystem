@@ -35,8 +35,8 @@ app.post("/signup", async (req, res) => {
   );
 
   console.log("Table after insertion:");
-  const response=await db.query("Select * from user_info");
-  console.log(response.rows)// Gives an array of objects containing the data
+  const response = await db.query("Select * from user_info");
+  console.log(response.rows); // Gives an array of objects containing the data
 
   res.send("You've been signed up");
 });
@@ -44,23 +44,18 @@ app.post("/signup", async (req, res) => {
 app.post("/signin", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  const email=req.body.email
+  const email = req.body.email;
   // console.log("signin credentials:");
-  let foundUser=null
-  const response=await db.query("Select * from user_info");
-  console.log(email +"   "+password);
-  
-  response.rows.forEach((elem)=>{
-    if(elem.email===email && elem.password===password){
-      console.log('user found , id: '+elem.id);
-      foundUser=elem
+  let foundUser = null;
+  const response = await db.query("Select * from user_info");
+  console.log(email + "   " + password);
 
-
+  response.rows.forEach((elem) => {
+    if (elem.email === email && elem.password === password) {
+      console.log("user found , id: " + elem.id);
+      foundUser = elem;
     }
-  })
-
-  
-  
+  });
 
   if (foundUser) {
     const token = jwt.sign(
@@ -69,7 +64,7 @@ app.post("/signin", async (req, res) => {
       },
       JWT_SECRET
     );
-    res.send(token);
+    res.json({ token, user_id: foundUser.id });
   } else {
     res.send("User not found");
   }
@@ -87,22 +82,19 @@ async function auth(req, res, next) {
   //   }
   // });
 
-  const response=await db.query("Select * from user_info");
-  response.rows.forEach((elem)=>{
-    if(elem.email===decodedInfo.email){
+  const response = await db.query("Select * from user_info");
+  response.rows.forEach((elem) => {
+    if (elem.email === decodedInfo.email) {
       // console.log('user found , id: '+elem.id);
       // foundUser=elem
-      req.username=elem.username
-      next()
-
-
+      req.username = elem.username;
+      next();
     }
-  })
-
+  });
 }
 
 app.get("/me", auth, (req, res) => {
-  res.json({username:req.username})
+  res.json({ username: req.username });
 });
 
 app.listen(3002);
