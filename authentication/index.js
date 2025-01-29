@@ -64,7 +64,7 @@ app.post("/signin", async (req, res) => {
       },
       JWT_SECRET
     );
-    res.json({ token, user_id: foundUser.id });
+    res.json({ token, user_id: foundUser.id, usertype: foundUser.usertype });
   } else {
     res.send("User not found");
   }

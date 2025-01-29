@@ -93,8 +93,28 @@ app.post("/borrowedbooks", async (req, res) => {
     );
     res.send("Book Borrowed Successfully!");
   } else {
-    res.send("THE BOOK IS ALREADY BORROWED");
+    res.send("The Book Is Already Borrowed");
   }
+});
+
+app.get("/authorinfo", async (req, res) => {
+  const response = await db.query(
+    `SELECT book_name,author_image, author_name, category,book_image,book_description
+     FROM books
+     INNER JOIN authors_info ON books.book_author = authors_info.author_name; `
+  );
+
+  res.send(response.rows);
+});
+
+app.post("/ratinginfo", async (req, res) => {
+  console.log(req.body);
+  const res1 = "sdfsd";
+
+  await db.query(`update books set star_ratings=($1) where book_name= ($2)`, [
+    req.body.rating,
+    req.body.book_name,
+  ]);
 });
 
 app.listen(port, () => {
