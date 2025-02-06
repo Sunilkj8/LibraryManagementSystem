@@ -48,6 +48,13 @@ app.get("/selfhelpbooks", async (req, res) => {
   res.send(response.rows);
 });
 
+app.get("/programmingbooks", async (req, res) => {
+  const response = await db.query("select*from books where category =($1)", [
+    "programming",
+  ]);
+  res.send(response.rows);
+});
+
 app.get("/inspiringbooks", async (req, res) => {
   const response = await db.query("select * from books");
   // console.log(response.rows);
@@ -61,6 +68,8 @@ app.post("/getborrowedbooks", async (req, res) => {
     const response = await db.query(
       `Select * from borrowed_books where user_id=${user_id}`
     );
+    console.log(response.rows);
+
     res.send(response.rows);
   } catch (error) {
     console.log("User Logged Out!");
@@ -81,10 +90,10 @@ app.post("/borrowedbooks", async (req, res) => {
   // console.log(req.body);
 
   const response = await db.query(
-    `select book_name from borrowed_books where book_name=$1 `,
-    [book_name]
+    `select book_name from borrowed_books where book_name=$1 AND user_id=$2 `,
+    [book_name, user_id]
   );
-  // console.log(response.rows);
+  console.log(response.rows);
 
   if (response.rows.length == 0) {
     await db.query(
@@ -95,6 +104,11 @@ app.post("/borrowedbooks", async (req, res) => {
   } else {
     res.send("The Book Is Already Borrowed");
   }
+});
+
+app.get("/totalborrowedbooks", async (req, res) => {
+  const response = await db.query("select * from borrowed_books");
+  res.send(response.rows);
 });
 
 app.get("/authorinfo", async (req, res) => {
@@ -109,12 +123,46 @@ app.get("/authorinfo", async (req, res) => {
 
 app.post("/ratinginfo", async (req, res) => {
   console.log(req.body);
-  const res1 = "sdfsd";
 
   await db.query(`update books set star_ratings=($1) where book_name= ($2)`, [
     req.body.rating,
     req.body.book_name,
   ]);
+});
+
+app.post("/favoriteinfo", async (req, res) => {
+  console.log(req.body);
+  await db.query(`update books set isfavourite=($1) where book_name=($2)`, [
+    req.body.isFavorite,
+    req.body.bookName,
+  ]);
+});
+
+app.get("/getfavoritebooks", async (req, res) => {
+  const response = await db.query(
+    `select * from books where isfavourite='true'`
+  );
+  console.log(response.rows);
+  res.send(response.rows);
+});
+
+app.get("/getuserinfo", async (req, res) => {
+  const response = await db.query("select * from user_info");
+  res.send(response.rows);
+});
+
+app.post("/addbooks", async (req, res) => {
+  console.log(req.body);
+  const { book_name } = req.body;
+  const { book_author } = req.body;
+  const { book_image } = req.body;
+  const { book_description } = req.body;
+  const { category } = req.body;
+
+  await db.query(
+    `Insert into books (book_name,book_author,book_image,book_description,category) values($1,$2,$3,$4,$5) `,
+    [book_name, book_author, book_image, book_description, category]
+  );
 });
 
 app.listen(port, () => {
