@@ -165,6 +165,26 @@ app.post("/addbooks", async (req, res) => {
   );
 });
 
+app.get("/getreviews", async (req, res) => {
+  const response = await db.query(`select * from book_reviews`);
+  res.send(response.rows);
+});
+
+app.post("/reviews", async (req, res) => {
+  const { book_id } = req.body;
+  const { review_headline } = req.body;
+  const { review_description } = req.body;
+  const { username } = req.body;
+  try {
+    await db.query(
+      `Insert into book_reviews(book_id,review_headline,review_description,username) values($1,$2,$3,$4)`,
+      [book_id, review_headline, review_description, username]
+    );
+  } catch (error) {
+    res.send("User can only write one book review for a particular book");
+  }
+});
+
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
 });
