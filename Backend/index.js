@@ -61,6 +61,20 @@ app.get("/inspiringbooks", async (req, res) => {
   res.send(response.rows);
 });
 
+app.get("/autobiographybooks", async (req, res) => {
+  const response = await db.query("select*from books where category =($1)", [
+    "autobiography",
+  ]);
+  res.send(response.rows);
+});
+
+app.get("/sportsbooks", async (req, res) => {
+  const response = await db.query("select*from books where category =($1)", [
+    "sports",
+  ]);
+  res.send(response.rows);
+});
+
 app.post("/getborrowedbooks", async (req, res) => {
   const user_id = parseInt(req.body.user_id);
   // console.log(user_id);
