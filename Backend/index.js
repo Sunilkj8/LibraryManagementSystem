@@ -77,7 +77,7 @@ app.get("/sportsbooks", async (req, res) => {
 
 app.post("/getborrowedbooks", async (req, res) => {
   console.log(req.body.user_id);
-  
+
   const user_id = parseInt(req.body.user_id);
   // console.log(user_id);
   try {
@@ -206,6 +206,17 @@ app.get("/admin-userinfo", async (req, res) => {
     `select user_info.username ,borrowed_books.book_id,borrowed_books.book_name,borrowed_books.book_author,borrowed_books.book_image,borrowed_books.book_description,borrowed_books.user_id,borrowed_books.returnon  from borrowed_books inner join user_info ON borrowed_books.user_id=user_info.Id`
   );
   res.send(response.rows);
+});
+
+app.post("/removefromborrowedbooks", async (req, res) => {
+  const book_id = req.body.book_id;
+  const user_id = req.body.user_id;
+
+  await db.query(
+    `delete from borrowed_books where book_id=($1) and user_id=($2)`,
+    [book_id, user_id]
+  );
+  res.send("Book Removed Successfully!");
 });
 
 app.listen(port, () => {
