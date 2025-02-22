@@ -76,6 +76,8 @@ app.get("/sportsbooks", async (req, res) => {
 });
 
 app.post("/getborrowedbooks", async (req, res) => {
+  console.log(req.body.user_id);
+  
   const user_id = parseInt(req.body.user_id);
   // console.log(user_id);
   try {
@@ -197,6 +199,13 @@ app.post("/reviews", async (req, res) => {
   } catch (error) {
     res.send("User can only write one book review for a particular book");
   }
+});
+
+app.get("/admin-userinfo", async (req, res) => {
+  const response = await db.query(
+    `select user_info.username ,borrowed_books.book_id,borrowed_books.book_name,borrowed_books.book_author,borrowed_books.book_image,borrowed_books.book_description,borrowed_books.user_id,borrowed_books.returnon  from borrowed_books inner join user_info ON borrowed_books.user_id=user_info.Id`
+  );
+  res.send(response.rows);
 });
 
 app.listen(port, () => {
