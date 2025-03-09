@@ -151,6 +151,9 @@ app.post("/favoriteinfo", async (req, res) => {
   await db.query(`update books set isfavourite=($1) where book_name=($2)`, [
     req.body.isFavorite,
     req.body.bookName,
+    
+
+
   ]);
 });
 
